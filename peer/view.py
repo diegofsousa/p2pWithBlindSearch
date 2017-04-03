@@ -181,6 +181,7 @@ class index(QDialog):
 		Limpa a lista
 		'''
 		self.lista.clear()
+		self.server.clear_list_server()
 
 
 	def timer_func(self):

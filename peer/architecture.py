@@ -101,6 +101,9 @@ class Serverp2p(QThread):
 		'''
 		return self.dicionario_dict
 
+	def clear_list_server(self):
+		self.dicionario_dict.clear()
+
 class Clientp2p(QThread):
 	def __init__ (self, word, fromm, ipsearch):
 		self.word = word
