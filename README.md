@@ -1,6 +1,6 @@
 # p2pWithBlindSearch
 
-Este é um sistema distribuído p2p com busca cega
+This is a distributed p2p system with blind search
 
 Step by Step to Install:
 
@@ -17,7 +17,7 @@ create a folder called "app" and put the repository files in it.
 
 4. In the virtualenv root create a "build" folder, download the SIP and PyQt4 modules. Once done, extract them into the folder:<br>
 PyQt4: https://www.riverbankcomputing.com/software/pyqt/download<br>
-SIP: https://pypi.python.org/pypi/SIP#downloads<br>
+SIP: https://www.riverbankcomputing.com/software/sip/download<br>
 
 5. Install some prerequisites:<br>
 ```sudo apt-get install python3-dev libxext-dev python-qt4 qt4-dev-tools build-essential```
