@@ -48,6 +48,7 @@ class Serverp2p(QThread):
 		while True:
 			data = conexao.recv(1024)
 			if not data: break
+			conexao.send(b'Eco=> ')
 			self.busca(data.decode())
 
 	def despacha(self):
@@ -71,6 +72,7 @@ class Clientp2p(QThread):
 		QThread.__init__(self)
 
 	def run(self):
+		print("Tentando conectar a "+ self.ipsearch)
 		serverHost = self.ipsearch
 		if self.ipsearch == '':
 			sockobj = socket(AF_INET, SOCK_STREAM)
@@ -82,7 +84,7 @@ class Clientp2p(QThread):
 			sockobj.send(wordok.encode())
 
 			data = sockobj.recv(1024)
-			#print("Cliente recebeu: ", data)
+			print("Cliente recebeu: ", data)
 
 			sockobj.close()
 		else:

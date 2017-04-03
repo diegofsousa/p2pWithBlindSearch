@@ -14,18 +14,18 @@ class index(QDialog):
 
 		
 		self.setWindowTitle("Peer")
-		ip = netifaces.ifaddresses('wlan0')[2][0]['addr']
-		self.qPort = QInputDialog.getText(self, 'Informe a porta', 'IP detectado como '+ip+'. \nTecle enter para confirmar ou informe o seu IP correto na rede:')
+		self.ip = netifaces.ifaddresses('wlan0')[2][0]['addr']
+		self.qPort = QInputDialog.getText(self, 'Informe a porta', 'IP detectado como '+self.ip+'. \nTecle enter para confirmar ou informe o seu IP correto na rede:')
 		print(self.qPort[0])
 		if self.qPort[0] != '':
-			ip = self.qPort[0]
-		self.server = Serverp2p(ip)
+			self.ip = self.qPort[0]
+		self.server = Serverp2p(self.ip)
 		self.connect(self.server, SIGNAL("success(QString)"), self.success)
 		self.connect(self.server, SIGNAL("fail()"), self.fail)
 		self.server.start()
 		# self.client = Clientp2p()
 		# self.client.start()
-		informe = QLabel("Servico rodando na porta "+ip)
+		informe = QLabel("Servico rodando na porta "+self.ip)
 		hbox = QHBoxLayout()
 		hbox.addWidget(informe)
 		label = QLabel("Procure por palavra: ")
@@ -83,10 +83,10 @@ class index(QDialog):
 		try:
 			sorteado = random.choice(self.lista_de_vizinhos)
 			print("A rota a seguir eh: {}".format(sorteado))
-			self.client = Clientp2p(self.nome_lineEdit.displayText(), self.qPort[0], sorteado)
+			self.client = Clientp2p(self.nome_lineEdit.displayText(), self.ip, sorteado)
 			self.client.start()
 		except Exception as e:
-			self.client = Clientp2p(self.nome_lineEdit.displayText(), self.qPort[0], '')
+			self.client = Clientp2p(self.nome_lineEdit.displayText(), self.ip, '')
 			self.client.start()
 
 	def add_viz(self):
