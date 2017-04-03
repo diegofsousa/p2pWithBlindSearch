@@ -38,13 +38,11 @@ class AddElem(QDialog):
         self.setGeometry(500, 300, 300, 100)
 
     def salvar(self):
-        print("Botao apertado")
         print(self.campoEmail.displayText())
         if self.campoSenha.displayText() == "" or self.campoEmail.displayText() == "":
             msg = QMessageBox.warning(self, "Alerta",
                                      "Preencha todos os campos!", QMessageBox.Close)
         else:
-            print("Cadastrou!")
             #lista.append(self.campoEmail.displayText() + ":" + self.campoSenha.displayText())
             self.emit(SIGNAL("reload(QString)"), self.campoEmail.displayText() + ":" + self.campoSenha.displayText())
             self.close()

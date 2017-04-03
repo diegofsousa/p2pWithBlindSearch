@@ -34,7 +34,7 @@ class index(QDialog):
 
 		# self.client = Clientp2p()
 		# self.client.start()
-		informe = QLabel("Servico rodando na porta "+self.ip)
+		informe = QLabel("Servico rodando no IP "+self.ip)
 
 		hbox = QHBoxLayout()
 		hbox.addWidget(informe)
@@ -69,12 +69,19 @@ class index(QDialog):
 		
 		self.inforvizinhos = QLabel("Vizinhos proximos: " + str(self.lista_de_palavras))
 		add_vizinho = QPushButton("Adicionar vizinho")
+		limpar_v = QPushButton("Limpar vizinhos")
+		sobre = QPushButton("Sobre")
+
+		hbox3 = QHBoxLayout()
+		hbox3.addWidget(add_vizinho)
+		hbox3.addWidget(limpar_v)
+		hbox3.addWidget(sobre)
 
 		vbox = QVBoxLayout()
 		vbox.addWidget(informedic)
 		vbox.addWidget(self.lista)
 		vbox.addLayout(hbox2)
-		vbox.addWidget(add_vizinho)
+		vbox.addLayout(hbox3)
 		vbox.addWidget(self.inforvizinhos)
 
 		# Lista dos peers vizinhos
@@ -98,8 +105,10 @@ class index(QDialog):
 		# Sinais dos cliques na interface
 		self.connect(self.search, SIGNAL("clicked()"), self.averiguar)
 		self.connect(add_vizinho, SIGNAL("clicked()"), self.add_viz)
+		self.connect(limpar_v, SIGNAL("clicked()"), self.limpar_vizinhos)
 		self.connect(button_add_word, SIGNAL("clicked()"), self.add_word)
 		self.connect(button_remove_all_word, SIGNAL("clicked()"), self.clear_list)
+		self.connect(sobre, SIGNAL("clicked()"), self.about)
 
 		
 		self.setGeometry(300,100,700,430)
@@ -130,7 +139,19 @@ class index(QDialog):
 		Este método adiciona IP's vizinhos tanto na GUI quanto na variável do server
 		'''
 		add = QInputDialog.getText(self, 'Adicionando IP vizinho', 'Adicione um IP valido:')
-		self.lista_de_vizinhos.append(add[0])
+		if add[0] == '':
+			msg = QMessageBox.information(self, "Alerta",
+											"Informe um IP valido",
+											 QMessageBox.Close)
+		else:
+			self.lista_de_vizinhos.append(add[0])
+			self.inforvizinhos.setText("Vizinhos proximos: " + str(self.lista_de_vizinhos))
+
+	def limpar_vizinhos(self):
+		'''
+		Este método serve para limpar os vizinhos.
+		'''
+		self.lista_de_vizinhos.clear()
 		self.inforvizinhos.setText("Vizinhos proximos: " + str(self.lista_de_vizinhos))
 
 	def success(self, significado):
@@ -159,9 +180,7 @@ class index(QDialog):
 		Este método adiciona palavras para no dicionário deste peer tanto na GUI quanto no server.
 		'''
 		ex = AddElem(self)
-		a = self.connect(ex, SIGNAL("reload(QString)"), self.reload)
-		print(a)
-		
+		a = self.connect(ex, SIGNAL("reload(QString)"), self.reload)	
 		ex.setModal(True)
 		ex.show()
 		#print(self.lista_de_vizinhos)
@@ -218,6 +237,15 @@ class index(QDialog):
 		except Exception as e:
 			self.client = Clientp2p(self.nome_lineEdit.displayText(), self.ip, '')
 			self.client.start()
+
+	def about(self):
+		'''
+		Este método dá os créditos ao desenvolvedor da aplicação
+		'''
+		msg = QMessageBox.information(self, "Sobre",
+											"Desenvolvedor: Diego Fernando\n"+
+											"https://github.com/diegofsousa/",
+											 QMessageBox.Close)
 
 			
 
