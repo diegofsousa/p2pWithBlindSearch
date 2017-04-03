@@ -7,6 +7,9 @@ import time, sys
 
 
 class TLL(QThread):
+	'''
+	Esta thread é responsável apenas pela criação de um contador regressivo para o TTL.
+	'''
 	def __init__ (self):
 		QThread.__init__(self)
 
@@ -15,11 +18,6 @@ class TLL(QThread):
 			self.decr()
 			time.sleep(1)
 		self.emit(SIGNAL("timeover()"))
-		# timer = QTimer()
-		# timer.start(1000)
-		# self.connect(timer, SIGNAL("timeout()"), self.decr)
-		
 
 	def decr(self):
-		print("decre")
 		self.emit(SIGNAL("timeo()"))

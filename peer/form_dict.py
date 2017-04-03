@@ -3,6 +3,9 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 class AddElem(QDialog):
+    '''
+    Esta classe é uma janela para adição de nova palavra no dicionário dinâmico da GUI.
+    '''
     def __init__(self, parent=None):
         super(AddElem, self).__init__(parent)
 
