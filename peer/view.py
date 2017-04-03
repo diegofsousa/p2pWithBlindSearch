@@ -6,6 +6,7 @@ from architecture import Serverp2p, Clientp2p
 from threading import Thread, current_thread
 import random
 from form_dict import AddElem
+import netifaces
 
 class index(QDialog):
 	def __init__(self, parent=None):
@@ -13,15 +14,18 @@ class index(QDialog):
 
 		
 		self.setWindowTitle("Peer")
-		self.qPort = QInputDialog.getText(self, 'Informe a porta', 'Antes se começar, informe o seu IP na rede:')
+		ip = netifaces.ifaddresses('wlan0')[2][0]['addr']
+		self.qPort = QInputDialog.getText(self, 'Informe a porta', 'IP detectado como '+ip+'. \nTecle enter para confirmar ou informe o seu IP correto na rede:')
 		print(self.qPort[0])
-		self.server = Serverp2p(self.qPort[0])
+		if self.qPort[0] != '':
+			ip = self.qPort[0]
+		self.server = Serverp2p(ip)
 		self.connect(self.server, SIGNAL("success(QString)"), self.success)
 		self.connect(self.server, SIGNAL("fail()"), self.fail)
 		self.server.start()
 		# self.client = Clientp2p()
 		# self.client.start()
-		informe = QLabel("Servico rodando na porta "+str(self.qPort[0]))
+		informe = QLabel("Servico rodando na porta "+ip)
 		hbox = QHBoxLayout()
 		hbox.addWidget(informe)
 		label = QLabel("Procure por palavra: ")

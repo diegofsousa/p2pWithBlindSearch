@@ -19,23 +19,7 @@ class Serverp2p(QThread):
 		self.sockobj.bind((self.meuHost, 5000))
 		self.sockobj.listen(5)
 		print("Server rodando em: " + self.meuHost + " - Porta: " + str(5000))
-		self.arquivo()
-		self.despacha()
-	
-	def arquivo(self):
-		try:
-			arq = open('files/dicionario.data', 'r')
-		except Exception as e:
-			arq = open('files/dicionario.data', 'a')
-		return arq
 
-	def neighbors(self):
-		try:
-			arq = open('files/vizinhos.data', 'r')
-		except Exception as e:
-			arq = open('files/vizinhos.data', 'a')
-		return arq
-		
 
 	def busca(self, data):
 		if(data.split('^')[0] == 'r'):
