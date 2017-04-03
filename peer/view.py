@@ -116,6 +116,7 @@ class index(QDialog):
 											 QMessageBox.Close)
 		else:
 			try:
+				print(self.lista_de_vizinhos)
 				sorteado = random.choice(self.lista_de_vizinhos)
 				print("A rota a seguir eh: {}".format(sorteado))
 				self.client = Clientp2p(self.nome_lineEdit.displayText(), self.ip, sorteado)

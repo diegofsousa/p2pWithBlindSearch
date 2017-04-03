@@ -24,8 +24,9 @@ class Serverp2p(QThread):
 		self.sockobj = socket(AF_INET, SOCK_STREAM)
 		self.sockobj.bind((self.meuHost, 5000))
 		self.sockobj.listen(5)
-		self.despacha()
 		print("Run, barry, run on: IP" + self.meuHost + " - Porta: " + str(5000))
+		self.despacha()
+		
 
 
 	def busca(self, data):
