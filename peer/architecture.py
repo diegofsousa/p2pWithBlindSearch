@@ -8,20 +8,19 @@ from response import devolve
 class Serverp2p(QThread):
 	def __init__ (self, meuHost):
 		self.meuHost = meuHost
+		
 		QThread.__init__(self)
 
 	def run(self):
 		#self.minhaPort = int(self.port)
+		self.neighbors = []
+		self.dicionario_dict = {}
 		self.sockobj = socket(AF_INET, SOCK_STREAM)
 		self.sockobj.bind((self.meuHost, 5000))
 		self.sockobj.listen(5)
 		print("Server rodando em: " + self.meuHost + " - Porta: " + str(5000))
 		self.arquivo()
-		self.neighbors()
 		self.despacha()
-
-	def get_dicionario(self):
-		return self.le(self.arquivo())
 	
 	def arquivo(self):
 		try:
@@ -36,34 +35,15 @@ class Serverp2p(QThread):
 		except Exception as e:
 			arq = open('files/vizinhos.data', 'a')
 		return arq
-
-	def get_neighbors(self):
-		lista = []
-		arquivo = self.neighbors()
-		try:
-			linha = arquivo.readline()
-			while linha:
-				lista.append(linha.replace("\n", ""))
-				linha = arquivo.readline()
-			return lista
-		except Exception as e:
-			print('Erro de achar vizinho: '+e)
-			return False		
-
-	def le(self, arquivo):
-		dicionario = {}
-		linha = arquivo.readline()
-		while linha:
-			dicionario[linha.split(':')[0]] = linha.split(':')[1]
-			linha = arquivo.readline()
-		return dicionario
-
+		
 
 	def busca(self, data):
 		if(data.split('^')[0] == 'r'):
 			print("Achou a palavra: "+data.split('^')[1])
+			self.emit(SIGNAL("success(QString)"), data.split('^')[1])
 		elif(data.split('^')[0] == 'e'):
 			print("Não achamos a peca certa "+data.split('^')[1])
+			self.emit(SIGNAL("fail()"))
 		else:
 			print("Chegou na função de busca")
 			#print(data)
@@ -71,7 +51,8 @@ class Serverp2p(QThread):
 			arq = self.arquivo()
 			print(data.split('^')[0])
 			try:
-				significado = self.le(arq)[data.split('^')[0]]
+				significado = self.dicionario_dict[data.split('^')[0]]
+				#significado = self.le(arq)[data.split('^')[0]]
 				if significado:					
 					thread.start_new_thread(devolve, (data.split('^')[1], significado))
 			except Exception as e:
@@ -90,6 +71,13 @@ class Serverp2p(QThread):
 			conexao, endereco = self.sockobj.accept()
 			print('Server conectado por', endereco)
 			thread.start_new_thread(self.lidaCliente, (conexao,))
+
+	def add_di_lista(self, palavra):
+		print(palavra)
+		self.dicionario_dict[palavra.split(":")[0]] = palavra.split(":")[1]
+
+	def get_list_lista(self):
+		return self.dicionario_dict
 
 class Clientp2p(QThread):
 	def __init__ (self, word, fromm, ipsearch):
