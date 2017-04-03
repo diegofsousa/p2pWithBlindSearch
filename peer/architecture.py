@@ -18,6 +18,7 @@ class Serverp2p(QThread):
 		self.sockobj = socket(AF_INET, SOCK_STREAM)
 		self.sockobj.bind((self.meuHost, 5000))
 		self.sockobj.listen(5)
+		self.despacha()
 		print("Server rodando em: " + self.meuHost + " - Porta: " + str(5000))
 
 
@@ -71,12 +72,12 @@ class Clientp2p(QThread):
 		self.ipsearch = ipsearch
 		QThread.__init__(self)
 
-	def run(self):
-		print("Tentando conectar a "+ self.ipsearch)
+	def run(self):		
 		serverHost = self.ipsearch
 		if self.ipsearch == '':
+			print("Tentando enviar requisicao a "+ self.ipsearch)
 			sockobj = socket(AF_INET, SOCK_STREAM)
-			sockobj.connect((self.ipsearch, 5000))
+			sockobj.connect((serverHost, 5000))
 			wordok = 'e^'+str(self.word)
 
 			#linha = input("Informe a mensagem a ser buscada: ")
@@ -88,6 +89,7 @@ class Clientp2p(QThread):
 
 			sockobj.close()
 		else:
+			print("Tentando enviar resposta a "+ self.ipsearch)
 			sockobj = socket(AF_INET, SOCK_STREAM)
 			sockobj.connect((serverHost, 5000))
 			wordok = str(self.word)+'^'+str(self.fromm)
@@ -96,4 +98,5 @@ class Clientp2p(QThread):
 
 			sockobj.send(wordok.encode())
 			data = sockobj.recv(1024)
+			print("Cliente recebeu: ", data)
 			sockobj.close()
