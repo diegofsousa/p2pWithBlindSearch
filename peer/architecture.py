@@ -33,7 +33,7 @@ class Serverp2p(QThread):
 			print("Chegou na função de busca")
 			#print(data)
 			#print(data.split('^')[1] + " esta buscando por " + data.split('^')[0] + ' em ' + str(self.get_dicionario()))
-			arq = self.arquivo()
+			#arq = self.arquivo()
 			print(data.split('^')[0])
 			try:
 				significado = self.dicionario_dict[data.split('^')[0]]
@@ -42,6 +42,7 @@ class Serverp2p(QThread):
 					thread.start_new_thread(devolve, (data.split('^')[1], significado))
 			except Exception as e:
 				print('Erro de busca')
+				self.emit(SIGNAL("forward(QString)"), data)				
 				#raise e
 				return 'Nada foi encontrado'
 

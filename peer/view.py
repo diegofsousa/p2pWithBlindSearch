@@ -7,6 +7,8 @@ from threading import Thread, current_thread
 import random
 from form_dict import AddElem
 import netifaces
+import time, sys
+from timer_tll import TLL
 
 class index(QDialog):
 	def __init__(self, parent=None):
@@ -22,6 +24,8 @@ class index(QDialog):
 		self.server = Serverp2p(self.ip)
 		self.connect(self.server, SIGNAL("success(QString)"), self.success)
 		self.connect(self.server, SIGNAL("fail()"), self.fail)
+		self.connect(self.server, SIGNAL("forward(QString)"), self.forward_search)
+
 		self.server.start()
 		# self.client = Clientp2p()
 		# self.client.start()
@@ -31,10 +35,13 @@ class index(QDialog):
 		label = QLabel("Procure por palavra: ")
 		self.nome_lineEdit = QLineEdit("")
 		self.search = QPushButton("Procurar")
+		self.tll = 5
+		self.label_tll = QLabel("TLL: " + str(self.tll))
 		hbox1 = QHBoxLayout()
 		hbox1.addWidget(label)
 		hbox1.addWidget(self.nome_lineEdit)
 		hbox1.addWidget(self.search)
+		hbox1.addWidget(self.label_tll)
 		self.lista_de_palavras = []
 
 		informedic = QLabel("Dicionario contido neste servico:")
@@ -71,23 +78,35 @@ class index(QDialog):
 
 		self.setLayout(vbox1)
 
+		self.ttll = TLL()
+
+		self.connect(self.ttll, SIGNAL("timeo()"), self.timer_func)
+		self.connect(self.ttll, SIGNAL("timeover()"), self.time_over)
+
 		self.connect(self.search, SIGNAL("clicked()"), self.averiguar)
 		self.connect(add_vizinho, SIGNAL("clicked()"), self.add_viz)
 		self.connect(button_add_word, SIGNAL("clicked()"), self.add_word)
 		self.connect(button_remove_all_word, SIGNAL("clicked()"), self.clear_list)
 
-
+		
 		self.setGeometry(300,100,700,430)
 
 	def averiguar(self):
-		try:
-			sorteado = random.choice(self.lista_de_vizinhos)
-			print("A rota a seguir eh: {}".format(sorteado))
-			self.client = Clientp2p(self.nome_lineEdit.displayText(), self.ip, sorteado)
-			self.client.start()
-		except Exception as e:
-			self.client = Clientp2p(self.nome_lineEdit.displayText(), self.ip, '')
-			self.client.start()
+		self.ttll.start()
+		if len(self.lista_de_vizinhos) == 0:
+			self.ttll.terminate()
+			msg = QMessageBox.information(self, "Erro!",
+											"Nao ha nenhum IP vizinho conectado.",
+											 QMessageBox.Close)
+		else:
+			try:
+				sorteado = random.choice(self.lista_de_vizinhos)
+				print("A rota a seguir eh: {}".format(sorteado))
+				self.client = Clientp2p(self.nome_lineEdit.displayText(), self.ip, sorteado)
+				self.client.start()
+			except Exception as e:
+				self.client = Clientp2p(self.nome_lineEdit.displayText(), self.ip, '')
+				self.client.start()
 
 	def add_viz(self):
 		add = QInputDialog.getText(self, 'Adicionando IP vizinho', 'Adicione um IP valido:')
@@ -95,10 +114,14 @@ class index(QDialog):
 		self.inforvizinhos.setText("Vizinhos proximos: " + str(self.lista_de_vizinhos))
 
 	def success(self, significado):
+		self.tll = 5
+		self.label_tll.setText("TLL: "+str(self.tll))
 		msg = QMessageBox.information(self, "Sucesso!",
 											"Significado da palavra encontrado: "+significado,
 											 QMessageBox.Close)
 	def fail(self):
+		self.tll = 5
+		self.label_tll.setText("TLL: "+str(self.tll))
 		msg = QMessageBox.information(self, "Falha!",
 											"Falha ao encontar significado da palavra:",
 											 QMessageBox.Close)
@@ -124,7 +147,39 @@ class index(QDialog):
 
 	def clear_list(self):
 		self.lista.clear()
-		
+
+	def decrem_tll(self):
+		timer = QTimer()		
+		timer.start(1000)
+		for i in range(0, 5):
+			timer.timeout.connect(self.timer_func)
+			timer.remainingTime()
+
+	def timer_func(self):
+		print("decrementando")
+		self.tll -= 1
+		self.label_tll.setText("TLL: "+str(self.tll))
+
+	def time_over(self):
+		self.tll = 5
+		self.label_tll.setText("TLL: "+str(self.tll))
+		msg = QMessageBox.information(self, "Falha!",
+											"Tempo de espera por mensagem acabou.",
+											 QMessageBox.Close)
+		self.client.terminate()
+
+	def forward_search(self, palavra):
+		try:
+			sorteado = random.choice(self.lista_de_vizinhos)
+			print("A rota a seguir eh: {}".format(sorteado))
+			self.client = Clientp2p(palavra.split('^')[0], palavra.split('^')[1], sorteado)
+			self.client.start()
+		except Exception as e:
+			self.client = Clientp2p(self.nome_lineEdit.displayText(), self.ip, '')
+			self.client.start()
+
+			
+
 
 app = QApplication(sys.argv)
 dlg = index()
