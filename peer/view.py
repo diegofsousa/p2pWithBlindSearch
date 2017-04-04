@@ -138,7 +138,8 @@ class index(QDialog):
 		'''
 		Este método adiciona IP's vizinhos tanto na GUI quanto na variável do server
 		'''
-		add = QInputDialog.getText(self, 'Adicionando IP vizinho', 'Adicione um IP valido:')
+		add = QInputDialog.getText(self, 'Adicionando IP vizinho', 'Adicione um IP valido:',QLineEdit.Normal ,self.ip.replace(self.ip.split('.')[-1], ''))
+
 		if add[0] == '':
 			msg = QMessageBox.information(self, "Alerta",
 											"Informe um IP valido",
@@ -244,7 +245,11 @@ class index(QDialog):
 		msg = QMessageBox.information(self, "Sobre",
 											"Desenvolvedor: Diego Fernando\n"+
 											"https://github.com/diegofsousa/",
-											 QMessageBox.Close)
+											 'Página do desenvolvedor')
+		self.open_link()
+
+	def open_link(self):
+		QDesktopServices.openUrl(QUrl('https://github.com/diegofsousa'))
 
 			
 
