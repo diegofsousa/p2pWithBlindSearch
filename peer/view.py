@@ -229,7 +229,6 @@ class index(QDialog):
 		'''
 		try:
 			if self.tll != 0:
-				self.ttll.start()
 				sorteado = random.choice(self.lista_de_vizinhos)
 				print("A rota a seguir eh: {}".format(sorteado))
 				self.client = Clientp2p(palavra.split('^')[0], palavra.split('^')[1], sorteado)
